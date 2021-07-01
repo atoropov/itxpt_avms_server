@@ -80,7 +80,7 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
 
     private val networkClient = AvmsDeliveryNetworkClient()
 
-    private fun registerService() {
+    fun registerService() {
         if (isAvmsServiceEnabled && !isServiceRegistered.get() && !isServiceRegistering.get()) {
             isServiceRegistering.set(true)
             nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
