@@ -1,0 +1,72 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.example.itxptavmsserver"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'META-INF/io.netty.versions.properties'
+    }
+}
+
+def retrofit2_version = "2.4.0"
+def xml_builder_version = "1.7.3"
+def ktor_version = "1.5.4"
+def okhttp_version = "4.7.2"
+def lifecycle_arch_version = "2.1.0"
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation "com.squareup.retrofit2:retrofit:${retrofit2_version}"
+    implementation "com.squareup.okhttp3:okhttp:${okhttp_version}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okhttp_version}"
+
+    // local server
+    implementation "io.ktor:ktor:${ktor_version}"
+    implementation "io.ktor:ktor-server-netty:${ktor_version}"
+
+    // XML parser
+    implementation "com.gitlab.mvysny.konsume-xml:konsume-xml:0.14"
+    implementation "org.redundent:kotlin-xml-builder:${xml_builder_version}"
+
+    implementation "android.arch.lifecycle:viewmodel:${lifecycle_arch_version}"
+    implementation "android.arch.lifecycle:extensions:${lifecycle_arch_version}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${lifecycle_arch_version}"
+}
