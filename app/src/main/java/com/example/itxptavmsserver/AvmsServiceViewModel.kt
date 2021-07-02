@@ -104,7 +104,7 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
                         SubscriptionType.values().forEach { type ->
                             post(type.path) {
                                 processSubscriptionRequest(call.receiveText(), type)?.let {
-                                    call.respond(HttpStatusCode.OK, SubscribeResponse(it).toXml())
+                                    call.respondText(SubscribeResponse(it).toXml(), ContentType.Application.Xml, HttpStatusCode.OK)
                                 }
                             }
                         }
