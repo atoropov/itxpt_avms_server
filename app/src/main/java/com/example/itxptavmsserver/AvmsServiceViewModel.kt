@@ -81,6 +81,7 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
     private val networkClient = AvmsDeliveryNetworkClient()
 
     fun registerService() {
+        Log.d(TAG, "registerService")
         if (isAvmsServiceEnabled && !isServiceRegistered.get() && !isServiceRegistering.get()) {
             isServiceRegistering.set(true)
             nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, registrationListener)
@@ -88,12 +89,14 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
     }
 
     private fun unregisterService() {
+        Log.d(TAG, "unregisterService")
         if (isServiceRegistered.get()) {
             nsdManager.unregisterService(registrationListener)
         }
     }
 
-    fun startServer() {
+    private fun startServer() {
+        Log.d(TAG, "startServer")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 server = embeddedServer(Netty, avmsServicePort) {
@@ -112,6 +115,7 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
     }
 
     private fun stopServer() {
+        Log.d(TAG, "stopServer")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 server?.stop(0, 0, TimeUnit.MILLISECONDS)
@@ -195,16 +199,6 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
             it.cancel()
             deliveryJob = null
         }
-    }
-
-    private fun restartDeliveryJob() {
-        stopDeliveryJob()
-        startDeliveryJobIfNeeded()
-    }
-
-    private fun onDeliveriesDataChanged() {
-        lastSuccessfulDeliveryTimestamps.clear()
-        restartDeliveryJob()
     }
 
     private fun sendDelivery(subscriptionRequest: SubscriptionRequest, type: SubscriptionType) {
