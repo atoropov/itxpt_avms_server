@@ -104,7 +104,12 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
                         SubscriptionType.values().forEach { type ->
                             post(type.path) {
                                 processSubscriptionRequest(call.receiveText(), type)?.let {
-                                    call.respondText(SubscribeResponse(it).toXml(), ContentType.Application.Xml, HttpStatusCode.OK)
+                                    call.respondText(SubscribeResponse(it.isSubscribed).toXml(), ContentType.Application.Xml, HttpStatusCode.OK)
+                                    if (it.isSubscribed) {
+                                        onSubscribe(it.subscriptionRequest, type)
+                                    } else {
+                                        onUnsubscribe(it.subscriptionRequest, type)
+                                    }
                                 }
                             }
                         }
@@ -123,26 +128,21 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
         }
     }
 
-    /**
-     * Returns true if subscribed, false - otherwise
-     */
-    private fun processSubscriptionRequest(subscriptionRequestString: String, type: SubscriptionType): Boolean? {
+    private fun processSubscriptionRequest(subscriptionRequestString: String, type: SubscriptionType): RequestResult? {
         Log.d(TAG, "$type: $subscriptionRequestString")
-        var isSubscribed: Boolean? = null
+        var result: RequestResult? = null
         subscriptionRequestString.konsumeXml().children(anyName) {
             when(localName) {
                 SUBSCRIBE_REQUEST -> {
-                    onSubscribe(SubscriptionRequestParser.fromXml(this), type)
-                    isSubscribed = true
+                    result = RequestResult(SubscriptionRequestParser.fromXml(this), true)
                 }
                 UNSUBSCRIBE_REQUEST -> {
-                    onUnsubscribe(SubscriptionRequestParser.fromXml(this), type)
-                    isSubscribed = false
+                    result = RequestResult(SubscriptionRequestParser.fromXml(this), false)
                 }
                 else -> skipContents()
             }
         }
-        return isSubscribed
+        return result
     }
 
     private fun onSubscribe(subscriptionRequest: SubscriptionRequest, type: SubscriptionType) {
@@ -278,6 +278,8 @@ class AvmsServiceViewModel(context: Context) : ViewModel() {
         private const val UNSUBSCRIBE_REQUEST = "UnsubscribeRequest"
     }
 }
+
+data class RequestResult(val subscriptionRequest: SubscriptionRequest, val isSubscribed: Boolean)
 
 enum class SubscriptionType(val subpath: String) {
     RUN_MONITORING("runmonitoring"),
